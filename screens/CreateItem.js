@@ -6,13 +6,14 @@ import { ROOT_URL } from '../globals'
 export default function CreateItem() {
   const navigation = useNavigation()
 
+  const [id, setId] = useState('');
   const [image, setImage] = useState('');
   const [name, setName] = useState('');
   const [team, setTeam] = useState('');
   const [country, setCountry] = useState('');
 
   const handleSubmit = () => {
-    if (image && name && team && country) {
+    if (id && image && name && team && country) {
       updateItem()
     } else {
       Alert.alert('Error', 'Por favor, llene todos los campos');
@@ -24,9 +25,10 @@ export default function CreateItem() {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ image, name, team, country })
+    body: JSON.stringify({ id, image, name, team, country })
   }).then(res => res.json())
     .then(() => {
+      setId('');
       setImage('');
       setName('');
       setTeam('');
@@ -35,6 +37,7 @@ export default function CreateItem() {
     }).catch(err => console.log(err))
 
   const handleCancel = () => {
+    setId('');
     setImage('');
     setName('');
     setTeam('');
@@ -44,6 +47,15 @@ export default function CreateItem() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>ID:</Text>
+        <TextInput
+          style={styles.input}
+          value={id}
+          onChangeText={setId}
+        />
+      </View>
+
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Imagen:</Text>
         <TextInput

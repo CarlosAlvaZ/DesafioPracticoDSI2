@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, ActivityIndicator, FlatList, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Image, ActivityIndicator, FlatList, TouchableOpacity, Dimensions, Button } from 'react-native';
 import { ROOT_URL } from '../globals';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FAB } from 'react-native-paper';
@@ -16,12 +16,14 @@ export default function ListView() {
   const [shouldReload, _] = useState(incomingParams?.reload ?? false)
 
   useEffect(() => {
-    fetch(ROOT_URL + "list")
-      .then(res => res.json())
-      .then(res => setData(res))
-      .catch(err => console.log(err))
-      .finally(setLoading(false))
-  }, [shouldReload])
+    fetchData()
+  }, [])
+
+  const fetchData = () => fetch(ROOT_URL + "list")
+    .then(res => res.json())
+    .then(res => setData(res))
+    .catch(err => console.log(err))
+    .finally(setLoading(false))
 
   const renderItem = ({ item }) => {
     return <TouchableOpacity style={styles.container} onPress={() => handlePress(item.id)}>
@@ -42,8 +44,9 @@ export default function ListView() {
           (<ActivityIndicator color="#0000ff" />) :
           (<View style={{ flex: 1 }}>
             <FlatList data={data.filter(item => validateItem(item))}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item._id}
               renderItem={renderItem} />
+            <Button title='Actualizar' onPress={() => fetchData()} />
             <FAB icon='plus' style={styles.fab} onPress={() => navigation.navigate("CreateItem", { id: 10 })} />
           </View>)
       }

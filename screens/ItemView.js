@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
-import { ActivityIndicator, Dimensions, StyleSheet, Text, View, Image, ScrollView } from 'react-native';
+import { ActivityIndicator, Dimensions, StyleSheet, Text, View, Image, ScrollView, Button } from 'react-native';
 import { ROOT_URL } from '../globals';
 import { FAB } from 'react-native-paper';
 
@@ -18,10 +18,17 @@ export default function ItemView() {
     fetch(ROOT_URL + `list/${id}`)
       .then(res => res.json())
       .then(res => setData(res))
-      .then(console.table(data))
+      .then(console.log(data))
       .catch(err => console.log(err))
       .finally(setLoading(false))
   }, [])
+
+  const handleDelete = () =>
+    fetch(ROOT_URL + `list/${id}`, { method: "DELETE" })
+      .then(res => res.json())
+      .then(res => console.log(res))
+      .then(navigation.navigate("ListView", { reload: true }))
+      .catch(err => console.log(err))
 
   return (
     <View style={{ flex: 1 }}>
@@ -38,6 +45,7 @@ export default function ItemView() {
                 <Text style={styles.title}>{data.name}</Text>
                 <Text style={styles.subtitle}>{data.team}</Text>
                 <Text style={styles.subtitle}>{data.country}</Text>
+                <Button title='Eliminar' onPress={() => handleDelete()} />
               </View>
             </ScrollView>
             <FAB

@@ -7,6 +7,7 @@ export default function EditItem() {
   const navigation = useNavigation()
   const item = useRoute().params.item
 
+  const [id, setId] = useState('');
   const [image, setImage] = useState('');
   const [name, setName] = useState('');
   const [team, setTeam] = useState('');
@@ -27,9 +28,10 @@ export default function EditItem() {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ image, name, team, country })
+    body: JSON.stringify({id, image, name, team, country })
   }).then(res => res.json())
     .then(() => {
+      setId('');
       setImage('');
       setName('');
       setTeam('');
@@ -38,6 +40,7 @@ export default function EditItem() {
     }).catch(err => console.log(err))
 
   const handleCancel = () => {
+    setId('');
     setImage('');
     setName('');
     setTeam('');
@@ -47,7 +50,7 @@ export default function EditItem() {
 
 
   useEffect(() => {
-    console.table(item)
+    setId(item.id ?? '');
     setImage(item.image ?? '');
     setName(item.name ?? '');
     setTeam(item.team ?? '');
@@ -56,6 +59,15 @@ export default function EditItem() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>ID:</Text>
+        <TextInput
+          style={styles.input}
+          value={id}
+          onChangeText={setId}
+        />
+      </View>
+
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Imagen:</Text>
         <TextInput
