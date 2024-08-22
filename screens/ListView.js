@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ActivityIndicator, FlatList, TouchableOpacity, Dimensions } from 'react-native';
 import { ROOT_URL } from '../globals';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { FAB } from 'react-native-paper';
 
 
@@ -11,15 +11,17 @@ export default function ListView() {
   const [loading, setLoading] = useState(true)
 
   const navigation = useNavigation()
+  const incomingParams = useRoute().params
+
+  const [shouldReload, _] = useState(incomingParams?.reload ?? false)
 
   useEffect(() => {
     fetch(ROOT_URL + "list")
       .then(res => res.json())
       .then(res => setData(res))
-      .then(console.table(data))
       .catch(err => console.log(err))
       .finally(setLoading(false))
-  }, [])
+  }, [shouldReload])
 
   const renderItem = ({ item }) => {
     return <TouchableOpacity style={styles.container} onPress={() => handlePress(item.id)}>
@@ -31,18 +33,18 @@ export default function ListView() {
     </TouchableOpacity>
   }
 
-  const handlePress = (id) => navigation.navigate('ItemViewNavigation', params = { itemId: 43 })
+  const handlePress = (id) => navigation.navigate('ItemViewNavigation', params = { screen: "ItemView", params: { id: id } })
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       {
         loading ?
           (<ActivityIndicator color="#0000ff" />) :
-          (<View>
+          (<View style={{ flex: 1 }}>
             <FlatList data={data.filter(item => validateItem(item))}
               keyExtractor={item => item.id}
               renderItem={renderItem} />
-            <FAB icon='plus' style={styles.fab} onPress={() => navigation.navigate("CreateItem", {id: 10})} />
+            <FAB icon='plus' style={styles.fab} onPress={() => navigation.navigate("CreateItem", { id: 10 })} />
           </View>)
       }
     </View >
